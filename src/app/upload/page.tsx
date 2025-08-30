@@ -2,15 +2,15 @@
 
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { EraTheme, getAvailableThemes, getThemeDisplayName, getThemeIcon } from '../../lib/ai';
-import { validateImageFile, compressImage } from '../../lib/utils';
+// import { EraTheme, getAvailableThemes, getThemeDisplayName, getThemeIcon } from '../../lib/ai';
+// import { validateImageFile, compressImage } from '../../lib/utils';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 
 export default function UploadPage() {
   const router = useRouter();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedTheme, setSelectedTheme] = useState<EraTheme | null>(null);
+  // const [selectedTheme, setSelectedTheme] = useState<EraTheme | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -18,12 +18,12 @@ export default function UploadPage() {
   const [showThemeModal, setShowThemeModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const themes = getAvailableThemes();
+  // const themes = getAvailableThemes();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const validation = validateImageFile(file);
+      // const validation = validateImageFile(file);
       if (validation.isValid) {
         setSelectedFile(file);
         setError(null);
@@ -41,7 +41,7 @@ export default function UploadPage() {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
     if (file) {
-      const validation = validateImageFile(file);
+      // const validation = validateImageFile(file);
       if (validation.isValid) {
         setSelectedFile(file);
         setError(null);
@@ -71,7 +71,7 @@ export default function UploadPage() {
       }, 100);
 
       // Compress image if needed
-      const compressedFile = await compressImage(selectedFile, 1024, 0.8);
+      // const compressedFile = await compressImage(selectedFile, 1024, 0.8);
 
       // Create FormData for upload
       const formData = new FormData();
@@ -108,7 +108,7 @@ export default function UploadPage() {
   };
 
   const handleGenerate = async () => {
-    if (!selectedTheme) return;
+    // if (!selectedTheme) return;
 
     const uploadedImage = localStorage.getItem('uploadedImage');
     if (!uploadedImage) {
@@ -127,10 +127,10 @@ export default function UploadPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          image_url: imageData.image_url,
-          era_theme: selectedTheme,
-        }),
+        // body: JSON.stringify({
+        //   image_url: imageData.image_url,
+        //   era_theme: selectedTheme,
+        // }),
       });
 
       if (!response.ok) {
@@ -275,7 +275,7 @@ export default function UploadPage() {
               Select the era or style you want to transform into
             </p>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {themes.map((theme) => (
                 <button
                   key={theme}
@@ -290,7 +290,7 @@ export default function UploadPage() {
                   <div className="font-medium text-gray-900">{getThemeDisplayName(theme)}</div>
                 </button>
               ))}
-            </div>
+            </div> */}
 
             <div className="flex justify-end space-x-3 pt-4">
               <Button
@@ -301,7 +301,7 @@ export default function UploadPage() {
               </Button>
               <Button
                 onClick={handleGenerate}
-                disabled={!selectedTheme || isGenerating}
+                // disabled={!selectedTheme || isGenerating}
               >
                 {isGenerating ? (
                   <div className="flex items-center">

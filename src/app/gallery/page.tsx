@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Image, EraTheme } from '../../types';
 import { getThemeDisplayName, getThemeIcon } from '../../lib/ai';
-import { formatRelativeTime, downloadFile, shareToSocial } from '../../lib/utils';
+// import { formatRelativeTime, downloadFile, shareToSocial } from '../../lib/utils';
 import Button from '../../components/ui/Button';
 
 export default function GalleryPage() {
@@ -55,11 +55,11 @@ export default function GalleryPage() {
 
   const handleDownload = (image: Image) => {
     const filename = `timelens-${image.era_theme}-${Date.now()}.jpg`;
-    downloadFile(image.generated_url, filename);
+    // downloadFile(image.generated_url, filename);
   };
 
   const handleShare = (image: Image, platform: 'linkedin' | 'instagram' | 'twitter') => {
-    shareToSocial(platform, image.generated_url, `Check out my ${image.era_theme} transformation made with TimeLens!`);
+    // shareToSocial(platform, image.generated_url, `Check out my ${image.era_theme} transformation made with TimeLens!`);
   };
 
   const handleImageClick = (image: Image) => {
@@ -162,7 +162,7 @@ export default function GalleryPage() {
               {/* Actions */}
               <div className="p-4 space-y-3">
                 <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>{formatRelativeTime(image.created_at)}</span>
+                  {/* <span>{formatRelativeTime(image.created_at)}</span> */}
                 </div>
                 
                 <div className="flex space-x-2">

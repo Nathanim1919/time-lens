@@ -1,6 +1,5 @@
-import React from 'react';
-import { ButtonProps } from '../../types';
-import { cn } from '../../lib/utils';
+import { ButtonProps } from '@/types';
+// import { cn } from '../../lib/utils';
 
 const Button: React.FC<ButtonProps> = ({
   children,
@@ -27,17 +26,17 @@ const Button: React.FC<ButtonProps> = ({
     lg: 'px-6 py-3 text-base',
   };
   
-  const classes = cn(
-    baseClasses,
-    variantClasses[variant],
-    sizeClasses[size],
-    className
-  );
+//   const classes = cn(
+//     baseClasses,
+//     variantClasses[variant],
+//     sizeClasses[size],
+//     className
+//   );
   
   return (
     <button
       type={type}
-      className={classes}
+    //   className={classes}
       disabled={disabled}
       onClick={onClick}
       {...props}

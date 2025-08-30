@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { User } from '../../types';
-import { auth, authState } from '../../lib/auth';
+// import { auth, authState } from '../../lib/auth';
 import Button from '../ui/Button';
 
 export default function Navigation() {
@@ -12,18 +12,18 @@ export default function Navigation() {
   const [user, setUser] = useState<User | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  useEffect(() => {
-    // Initialize auth state
-    authState.initialize();
+  // useEffect(() => {
+  //   // Initialize auth state
+  //   authState.initialize();
     
-    // Subscribe to auth changes
-    const unsubscribe = authState.subscribe(setUser);
-    return unsubscribe;
-  }, []);
+  //   // Subscribe to auth changes
+  //   const unsubscribe = authState.subscribe(setUser);
+  //   return unsubscribe;
+  // }, []);
 
   const handleSignOut = async () => {
     try {
-      await auth.signOut();
+      // await auth.signOut();
       setIsMenuOpen(false);
     } catch (error) {
       console.error('Sign out error:', error);
@@ -33,7 +33,7 @@ export default function Navigation() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
+    <nav className="bg-[#121212] shadow-sm border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}

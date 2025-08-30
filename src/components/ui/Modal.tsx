@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
-import { ModalProps } from '../../types';
-import { cn } from '../../lib/utils';
+import { ModalProps } from "@/types";
+import { useEffect } from "react";
+
 
 const Modal: React.FC<ModalProps> = ({
   isOpen,
@@ -48,10 +48,10 @@ const Modal: React.FC<ModalProps> = ({
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div 
-          className={cn(
-            'relative bg-white rounded-lg shadow-xl w-full',
-            sizeClasses[size]
-          )}
+        //   className={cn(
+        //     'relative bg-white rounded-lg shadow-xl w-full',
+        //     sizeClasses[size]
+        //   )}
           onClick={(e) => e.stopPropagation()}
           {...props}
         >
