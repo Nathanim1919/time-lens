@@ -8,8 +8,8 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="relative bg-black min-h-screen overflow-hidden grid grid-cols-1 md:grid-cols-2">
-        <div className="relative text-white min-h-[90vh] flex items-center justify-center">
+      <section className="relative  bg-black min-h-screen overflow-hidden grid grid-cols-1">
+        <div className="w-[100%] text-white min-h-[90vh] flex items-center relative z-100 justify-center">
           <div className="max-w-5xl mx-auto px-6 text-center">
             <h1 className="text-5xl capitalize md:text-6xl font-extrabold leading-tight mb-6">
               discover versions of yourself you’ve never seen before.
@@ -52,12 +52,10 @@ export default function HomePage() {
           <img className="w-full mb-4 rounded-lg" src="https://picsum.photos/400/600" alt="Hero" />
           <img className="w-full mb-4 rounded-lg" src="https://picsum.photos/400/500" alt="Hero" />
         </div>
-
-
       </section>
+      <CTA />
       <Feature />
       <HowItWork />
-      <CTA />
     </>
   );
 }
