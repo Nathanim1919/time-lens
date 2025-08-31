@@ -103,6 +103,7 @@ export interface User {
     onClick?: () => void;
     className?: string;
     type?: 'button' | 'submit' | 'reset';
+    loading?: boolean;
   }
   
   export interface InputProps {

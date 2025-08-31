@@ -9,6 +9,7 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   className = '',
   type = 'button',
+  loading = false,
   ...props
 }) => {
   const baseClasses = 'inline-flex !cursor-pointer items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
@@ -36,7 +37,14 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       {...props}
     >
-      {children}
+      {loading ? (
+        <div className="flex items-center gap-2">
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          {children}
+        </div>
+      ) : (
+        children
+      )}
     </button>
   );
 };

@@ -84,6 +84,7 @@ export default function SignupPage() {
                         variant="primary"
                         size="lg"
                         disabled={isLoading}
+                        
                         type="submit"
                         className="w-full py-3 flex items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold shadow-lg hover:scale-[1.02] hover:shadow-violet-500/30 transition-all"
                     >
