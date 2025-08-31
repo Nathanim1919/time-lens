@@ -24,6 +24,7 @@ model User {
   updatedAt     DateTime
   sessions      Session[]
   accounts      Account[]
+  images        Image[]
 
   @@unique([email])
   @@map("user")
@@ -62,6 +63,22 @@ model Account {
 
   @@map("account")
 }
+
+
+model Image {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  
+  originalUrl  String   // Supabase storage URL for uploaded selfie
+  generatedUrl String   // Supabase storage URL for AI output
+  eraTheme     String   // "medieval", "cyberpunk", etc.
+
+  createdAt    DateTime @default(now())
+
+  @@map("image")
+}
+
 
 model Verification {
   id         String    @id

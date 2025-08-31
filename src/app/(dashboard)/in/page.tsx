@@ -2,7 +2,6 @@
 
 import TransformingModal from "@/components/modal/TransformingModal";
 import { useRef, useState } from "react";
-import { generateDecadeImage } from "@/services/AiService";
 
 export default function DashboardPage() {
   const [showThemeModal, setShowThemeModal] = useState(false);
@@ -54,18 +53,32 @@ export default function DashboardPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const initializeImageTransformation = async () => {
-    if (!selectedImage || !(selectedEra || customPrompt)) return;
+    if (!selectedImageFile || !(selectedEra || customPrompt)) return;
     setShowTransformingModal(true);
     setIsLoading(true);
     setTransformedImage(null);
     setError(null);
+    
     try {
-      const prompt = customPrompt || selectedEra!;
-      const result = await generateDecadeImage(selectedImage, prompt);
-      setTransformedImage(result);
+      const formData = new FormData();
+      formData.append('image', selectedImageFile);
+      if (selectedEra) formData.append('eraTheme', selectedEra);
+      if (customPrompt) formData.append('customPrompt', customPrompt);
+
+      const response = await fetch('/api/transform', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.details || result.error || 'Transformation failed');
+      }
+
+      setTransformedImage(result.image.generatedUrl);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
       setError(errorMessage);
       console.error("AI transformation failed:", error);
     } finally {
@@ -230,9 +243,9 @@ export default function DashboardPage() {
           </div>
           <button
             onClick={initializeImageTransformation}
-            disabled={!selectedImage || (!selectedEra && !customPrompt)}
+            disabled={!selectedImageFile || (!selectedEra && !customPrompt)}
             className={`px-4 py-2 rounded-full ${
-              selectedImage && (selectedEra || customPrompt)
+              selectedImageFile && (selectedEra || customPrompt)
                 ? "bg-[#333333] cursor-pointer hover:bg-[#444444]"
                 : "bg-[#222222] cursor-not-allowed text-gray-500"
             } transition-colors`}
