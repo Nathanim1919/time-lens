@@ -13,6 +13,13 @@ export default function Navigation() {
 
   const isActive = (path: string) => pathname === path;
 
+  // Hide navigation on protected routes
+  const isProtectedRoute = pathname.startsWith('/in') || pathname.startsWith('/dashboard');
+
+  if (isProtectedRoute) {
+    return null;
+  }
+
   return (
     <nav className="bg-black relative text-white w-full z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
