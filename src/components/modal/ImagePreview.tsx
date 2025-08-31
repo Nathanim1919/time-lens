@@ -49,7 +49,9 @@ export default function ImagePreview({
     };
   }, [isOpen, onClose]);
 
-  const currentImageUrl = isOriginalImage ? originalImageUrl : generatedImageUrl;
+  const currentImageUrl = isOriginalImage
+    ? originalImageUrl
+    : generatedImageUrl;
   const canSwitch = originalImageUrl && originalImageUrl !== generatedImageUrl;
 
   const handleImageSwitch = () => {
@@ -62,14 +64,16 @@ export default function ImagePreview({
 
   const handleDownload = async () => {
     if (!currentImageUrl) return;
-    
+
     try {
       const response = await fetch(currentImageUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `time-lens-${isOriginalImage ? "original" : "generated"}-${Date.now()}.jpg`;
+      a.download = `time-lens-${
+        isOriginalImage ? "original" : "generated"
+      }-${Date.now()}.jpg`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -84,11 +88,11 @@ export default function ImagePreview({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         onClick={onClose}
       />
-      
+
       {/* Modal Content */}
       <div className="relative w-full h-full flex flex-col bg-black">
         {/* Header */}
@@ -108,7 +112,7 @@ export default function ImagePreview({
               </span>
             )}
           </div>
-          
+
           <div className="flex items-center gap-2">
             {/* Download Button */}
             <button
@@ -118,7 +122,7 @@ export default function ImagePreview({
             >
               <Download className="w-5 h-5" />
             </button>
-            
+
             {/* Close Button */}
             <button
               onClick={onClose}
@@ -144,7 +148,7 @@ export default function ImagePreview({
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
                 style={{ maxHeight: "calc(100vh - 120px)" }}
               />
-              
+
               {/* Image Switch Controls */}
               {canSwitch && (
                 <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-4 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 border border-gray-700">
@@ -166,11 +170,19 @@ export default function ImagePreview({
           <div className="p-4 bg-black/50 backdrop-blur-sm border-t border-gray-800">
             <div className="flex items-center justify-center gap-6">
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${!isOriginalImage ? 'bg-violet-500' : 'bg-gray-600'}`} />
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    !isOriginalImage ? "bg-violet-500" : "bg-gray-600"
+                  }`}
+                />
                 <span className="text-white text-sm">Generated</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${isOriginalImage ? 'bg-blue-500' : 'bg-gray-600'}`} />
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    isOriginalImage ? "bg-blue-500" : "bg-gray-600"
+                  }`}
+                />
                 <span className="text-white text-sm">Original</span>
               </div>
             </div>
