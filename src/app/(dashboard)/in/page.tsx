@@ -4,121 +4,134 @@ import TransformingModal from "@/components/modal/TransformingModal";
 import { useRef, useState, useEffect, useCallback } from "react";
 
 export default function DashboardPage() {
-    const [showThemeModal, setShowThemeModal] = useState(false);
-    const [selectedEra, setSelectedEra] = useState<string | null>(null);
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
-    const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
-    const [showTransformingModal, setShowTransformingModal] = useState(false);
-    const [customPrompt, setCustomPrompt] = useState<string>("");
-    const [transformedImage, setTransformedImage] = useState<string | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [userImages, setUserImages] = useState<any[]>([]);
-    const [imagesLoading, setImagesLoading] = useState(true);
+  const [showThemeModal, setShowThemeModal] = useState(false);
+  const [selectedEra, setSelectedEra] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [showTransformingModal, setShowTransformingModal] = useState(false);
+  const [customPrompt, setCustomPrompt] = useState<string>("");
+  const [transformedImage, setTransformedImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [userImages, setUserImages] = useState<any[]>([]);
+  const [imagesLoading, setImagesLoading] = useState(true);
   const themes = [
     {
-      name: "Medieval",
-      icon: "🏰",
+      name: "Ancient Egypt",
+      icon: "🪔", // iconic + instantly recognizable
     },
-
     {
-      name: "Futuristic",
+      name: "Medieval Knight",
+      icon: "⚔️",
+    },
+    {
+      name: "Renaissance Royalty",
+      icon: "👑",
+    },
+    {
+      name: "Victorian Era",
+      icon: "🎩",
+    },
+    {
+      name: "1920s Jazz Age",
+      icon: "🍸",
+    },
+    {
+      name: "1970s Retro",
+      icon: "🕺",
+    },
+    {
+      name: "Cyberpunk Future",
+      icon: "🌌",
+    },
+    {
+      name: "Space Explorer",
       icon: "🚀",
     },
-
     {
-      name: "Late 20th Century",
-      icon: "📺",
+      name: "Anime Style",
+      icon: "🎨",
     },
-
     {
-      name: "Early 20th Century",
-      icon: "📺",
-    },
-
-    {
-      name: "Space",
-      icon: "🚀",
-    },
-
-    {
-      name: "Renaissance",
-      icon: "🇫",
-    },
-
-    {
-      name: "Victorian",
-      icon: "🇫",
+      name: "Superhero",
+      icon: "🦸",
     },
   ];
+
   // Ref for hidden file input
-      const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Fetch user images on component mount
-    useEffect(() => {
-        fetchUserImages();
-    }, []); // Empty dependency array
+  // Fetch user images on component mount
+  useEffect(() => {
+    fetchUserImages();
+  }, []); // Empty dependency array
 
-    const fetchUserImages = useCallback(async () => {
-        try {
-            console.log('Fetching user images...');
-            const response = await fetch('/api/images');
-            const result = await response.json();
-            
-            console.log('Images API response:', result);
-            
-            if (response.ok) {
-                setUserImages(result.images);
-                console.log('Set user images:', result.images);
-            } else {
-                console.error('Failed to fetch images:', result.error);
-            }
-        } catch (error) {
-            console.error('Error fetching images:', error);
-        } finally {
-            setImagesLoading(false);
-        }
-    }, []);
+  const fetchUserImages = useCallback(async () => {
+    try {
+      console.log('Fetching user images...');
+      const response = await fetch('/api/images');
+      const result = await response.json();
 
-    const initializeImageTransformation = async () => {
-        if (!selectedImageFile || !(selectedEra || customPrompt)) return;
-        setShowTransformingModal(true);
-        setIsLoading(true);
-        setTransformedImage(null);
-        setError(null);
-        
-        try {
-            const formData = new FormData();
-            formData.append('image', selectedImageFile);
-            if (selectedEra) formData.append('eraTheme', selectedEra);
-            if (customPrompt) formData.append('customPrompt', customPrompt);
+      console.log('Images API response:', result);
 
-            const response = await fetch('/api/transform', {
-                method: 'POST',
-                body: formData,
-            });
+      if (response.ok) {
+        setUserImages(result.images);
+        console.log('Set user images:', result.images);
+      } else {
+        console.error('Failed to fetch images:', result.error);
+      }
+    } catch (error) {
+      console.error('Error fetching images:', error);
+    } finally {
+      setImagesLoading(false);
+    }
+  }, []);
 
-            const result = await response.json();
+  const initializeImageTransformation = async () => {
+    if (!selectedImageFile || !(selectedEra || customPrompt)) return;
+    setShowTransformingModal(true);
+    setIsLoading(true);
+    setTransformedImage(null);
+    setError(null);
 
-            if (!response.ok) {
-                throw new Error(result.details || result.error || 'Transformation failed');
-            }
+    try {
+      const formData = new FormData();
+      formData.append('image', selectedImageFile);
+      if (selectedEra) formData.append('eraTheme', selectedEra);
+      if (customPrompt) formData.append('customPrompt', customPrompt);
 
-            setTransformedImage(result.image.generatedUrl);
-            // Refresh user images after successful transformation
-            await fetchUserImages();
-            // Show success message
-            setTimeout(() => {
-                setShowTransformingModal(false);
-            }, 2000);
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            setError(errorMessage);
-            console.error("AI transformation failed:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      const response = await fetch('/api/transform', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.details || result.error || 'Transformation failed');
+      }
+
+      setTransformedImage(result.image.generatedUrl);
+      // reset custom prompt, era theme and image file
+
+      // Refresh user images after successful transformation
+      await fetchUserImages();
+      // Show success message
+      setTimeout(() => {
+        setCustomPrompt('');
+        setSelectedEra(null);
+        setSelectedImageFile(null);
+        setSelectedImage(null);
+        setShowTransformingModal(false);
+      }, 2000);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setError(errorMessage);
+      console.error("AI transformation failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="p-8">
@@ -149,7 +162,7 @@ export default function DashboardPage() {
             </button>
           </div>
         </div>
-        
+
         {imagesLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-400"></div>
@@ -162,17 +175,17 @@ export default function DashboardPage() {
             <p className="text-gray-400">Upload an image and transform it to see your gallery!</p>
           </div>
         ) : (
-          <div className="columns-5">
+          <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
             {userImages.map((image) => (
-                
-              <div key={image.id} className="group relative">
-                <div className="relative w-[240px] overflow-hidden rounded-lg">
-                  <img 
-                    src={image.generatedUrl} 
+              <div key={image.id} className="group relative cursor-pointer break-inside-avoid">
+                <div className="relative overflow-hidden rounded-lg bg-[#333333]">
+                  <img
+                    src={image.generatedUrl}
                     alt={`${image.eraTheme} transformation`}
-                    className="w-full my-1 mx-4  object-cover transition-transform group-hover:scale-105"
+                    className="w-full h-auto object-cover transition-transform group-hover:scale-105"
+                    loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/0 bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 flex items-center justify-center">
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-center">
                       <div className="text-white text-sm font-medium">{image.eraTheme}</div>
                       <div className="text-gray-300 text-xs">
@@ -319,11 +332,10 @@ export default function DashboardPage() {
           <button
             onClick={initializeImageTransformation}
             disabled={!selectedImageFile || (!selectedEra && !customPrompt)}
-            className={`px-4 py-2 rounded-full ${
-              selectedImageFile && (selectedEra || customPrompt)
-                ? "bg-[#333333] cursor-pointer hover:bg-[#444444]"
-                : "bg-[#222222] cursor-not-allowed text-gray-500"
-            } transition-colors`}
+            className={`px-4 py-2 rounded-full ${selectedImageFile && (selectedEra || customPrompt)
+              ? "bg-[#333333] cursor-pointer hover:bg-[#444444]"
+              : "bg-[#222222] cursor-not-allowed text-gray-500"
+              } transition-colors`}
           >
             Generate
           </button>
