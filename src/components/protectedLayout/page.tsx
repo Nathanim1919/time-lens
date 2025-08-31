@@ -11,6 +11,7 @@ export default function ProtectedLayout({
     if (!session) {
         redirect("/login")
     }
+
     return (
         <div>
             <div>
