@@ -1,6 +1,7 @@
 "use client";
 
 import TransformingModal from "@/components/modal/TransformingModal";
+import ImagePreview from "@/components/modal/ImagePreview";
 import { useRef, useState, useEffect, useCallback } from "react";
 
 export default function DashboardPage() {
@@ -15,6 +16,8 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [userImages, setUserImages] = useState<any[]>([]);
   const [imagesLoading, setImagesLoading] = useState(true);
+  const [showImagePreview, setShowImagePreview] = useState(false);
+  const [previewImage, setPreviewImage] = useState<any>(null);
   const themes = [
     {
       name: "Ancient Egypt",
@@ -87,6 +90,16 @@ export default function DashboardPage() {
     }
   }, []);
 
+  const handleImageClick = (image: any) => {
+    setPreviewImage(image);
+    setShowImagePreview(true);
+  };
+
+  const handleCloseImagePreview = () => {
+    setShowImagePreview(false);
+    setPreviewImage(null);
+  };
+
   const initializeImageTransformation = async () => {
     if (!selectedImageFile || !(selectedEra || customPrompt)) return;
     setShowTransformingModal(true);
@@ -145,6 +158,14 @@ export default function DashboardPage() {
         isLoading={isLoading}
         error={error}
       />
+      <ImagePreview
+        isOpen={showImagePreview}
+        onClose={handleCloseImagePreview}
+        originalImageUrl={previewImage?.originalUrl}
+        generatedImageUrl={previewImage?.generatedUrl || ''}
+        eraTheme={previewImage?.eraTheme}
+        createdAt={previewImage?.createdAt}
+      />
       <div className="space-y-4 w-[70%] mx-auto">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-white">Your Gallery</h1>
@@ -177,7 +198,7 @@ export default function DashboardPage() {
         ) : (
           <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
             {userImages.map((image) => (
-              <div key={image.id} className="group relative cursor-pointer break-inside-avoid">
+              <div key={image.id} className="group relative cursor-pointer break-inside-avoid" onClick={() => handleImageClick(image)}>
                 <div className="relative overflow-hidden rounded-lg bg-[#333333]">
                   <img
                     src={image.generatedUrl}
