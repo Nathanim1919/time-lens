@@ -14,7 +14,7 @@ export default function Navigation() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className="bg-black text-white fixed w-full z-50 shadow-lg">
+    <nav className="bg-black relative text-white w-full z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
 
@@ -33,8 +33,8 @@ export default function Navigation() {
                 key={i}
                 href={path}
                 className={`relative px-3 py-2 font-semibold text-sm transition-colors ${isActive(path)
-                    ? 'text-white after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-500 after:via-purple-600 after:to-pink-500'
-                    : 'text-gray-400 hover:text-white'
+                  ? 'text-white after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-gradient-to-r after:from-blue-500 after:via-purple-600 after:to-pink-500'
+                  : 'text-gray-400 hover:text-white'
                   }`}
               >
                 {path === '/' ? 'Home' : path.slice(1).charAt(0).toUpperCase() + path.slice(2)}
@@ -81,18 +81,32 @@ export default function Navigation() {
                 )}
               </div>
             ) : (
-              <div className="flex items-center space-x-3">
-                <Link href="/auth/signin">
-                  <Button variant="outline" size="sm" className="text-white border-white hover:bg-white hover:text-black">
-                    Sign In
+              <div className="flex items-center gap-4">
+                {/* Minimal Sign In */}
+                <Link href="/login">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-white bg-transparent border-white/30 hover:bg-white/10 hover:border-violet-400 hover:text-violet-300 
+                             rounded-lg px-5 py-2 transition-all duration-300"
+                  >
+                    Log In
                   </Button>
                 </Link>
-                <Link href="/auth/signup">
-                  <Button size="sm" className="bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 hover:opacity-90 text-white">
-                    Sign Up
+
+                {/* Premium Sign Up */}
+                <Link href="/signup">
+                  <Button
+                    size="sm"
+                    className="bg-gradient-to-r from-violet-500 via-purple-600 to-pink-500 text-white font-semibold
+                             rounded-lg px-6 py-2 border border-violet-400/50 shadow-[0_0_15px_rgba(139,92,246,0.5)]
+                             hover:shadow-[0_0_25px_rgba(139,92,246,0.7)] hover:scale-105 transition-all duration-300"
+                  >
+                    Get Started
                   </Button>
                 </Link>
               </div>
+
             )}
           </div>
 

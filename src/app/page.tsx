@@ -1,11 +1,10 @@
 import Link from 'next/link';
-import { getAvailableThemes, getThemeDisplayName, getThemeIcon } from '../lib/ai';
+// import { getAvailableThemes, getThemeDisplayName, getThemeIcon } from '../lib/ai';
 import Feature from './section/Feature/Page';
 import HowItWork from './section/HowItWork/Page';
 import CTA from './section/CTA/Page';
 
 export default function HomePage() {
-
   return (
     <>
       <section className="relative  bg-black min-h-screen overflow-hidden grid grid-cols-1">

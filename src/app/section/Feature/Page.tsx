@@ -64,10 +64,7 @@ export default function EraShowcase() {
                     {[...themes, ...themes].map((theme, index) => (
                         <div
                             key={`${theme}-${index}`}
-                            className="flex-shrink-0 w-80 rounded-2xl border border-gray-800 p-6
-                                       bg-gradient-to-b from-gray-900/60 to-gray-950/80
-                                       backdrop-blur-xl shadow-lg shadow-purple-500/10
-                                       transform transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-purple-500/20"
+                            className="flex-shrink-0 w-80 rounded-2xl border border-gray-800 p-6 bg-gradient-to-b from-gray-900/60 to-gray-950/80 backdrop-blur-xl shadow-lg shadow-purple-500/10 transform transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-purple-500/20"
                         >
                             <div className="text-6xl mb-6 text-center transition-transform duration-300 hover:scale-125">
                                 {getThemeIcon(theme)}
@@ -90,11 +87,7 @@ export default function EraShowcase() {
 
                 {/* CTA */}
                 <div className="text-center mt-16">
-                    <button className="inline-flex items-center px-7 py-3.5 
-                                       bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600
-                                       text-white font-medium rounded-xl
-                                       hover:from-blue-500 hover:via-purple-500 hover:to-pink-500
-                                       transition-all duration-500 shadow-lg hover:shadow-purple-500/30">
+                    <button className="inline-flex items-center px-7 py-3.5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-medium rounded-xl hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 transition-all duration-500 shadow-lg hover:shadow-purple-500/30">
                         Try It Now
                         <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />

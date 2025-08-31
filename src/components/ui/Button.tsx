@@ -11,7 +11,7 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   ...props
 }) => {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseClasses = 'inline-flex !cursor-pointer items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variantClasses = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 shadow-sm',
@@ -26,17 +26,12 @@ const Button: React.FC<ButtonProps> = ({
     lg: 'px-6 py-3 text-base',
   };
   
-//   const classes = cn(
-//     baseClasses,
-//     variantClasses[variant],
-//     sizeClasses[size],
-//     className
-//   );
+  const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`.replace(/\s+/g, ' ').trim();
   
   return (
     <button
       type={type}
-    //   className={classes}
+      className={classes}
       disabled={disabled}
       onClick={onClick}
       {...props}
