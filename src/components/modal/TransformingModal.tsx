@@ -8,6 +8,9 @@ interface TransformingModalProps {
   selectedImage?: string | null;
   selectedEra?: string | null;
   customPrompt?: string;
+  transformedImage?: string | null;
+  isLoading?: boolean;
+  error?: string | null;
 }
 
 const steps = [
@@ -23,6 +26,9 @@ export default function TransformingModal({
   selectedImage,
   selectedEra,
   customPrompt,
+  transformedImage,
+  isLoading = false,
+  error,
 }: TransformingModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -42,11 +48,18 @@ export default function TransformingModal({
     }
   }, [isOpen]);
 
+  // Reset step when transformation completes
+  useEffect(() => {
+    if (transformedImage && !isLoading) {
+      setCurrentStep(steps.length);
+    }
+  }, [transformedImage, isLoading]);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-gradient-to-br from-[#1b1b1b] to-[#262626] border border-violet-500/30 rounded-2xl p-8 max-w-4xl w-full h-[70%] mx-4 shadow-xl relative">
+      <div className="bg-gradient-to-br from-[#1b1b1b] to-[#262626] border border-violet-500/30 rounded-2xl p-8 max-w-4xl w-full h-[90%] mx-4 shadow-xl relative">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-bold text-white">AI Transformation</h1>
@@ -66,11 +79,11 @@ export default function TransformingModal({
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Original Image */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">Original</h3>
-            <div className="bg-[#2d2d2d] rounded-lg p-4 flex items-center justify-center h-48">
+            <div className="bg-[#2d2d2d] rounded-lg p-4 flex items-center justify-center">
               {selectedImage ? (
                 <img
                   src={selectedImage}
@@ -83,75 +96,60 @@ export default function TransformingModal({
             </div>
           </div>
 
-          {/* Prompt */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Prompt</h3>
-            <div className="bg-[#2d2d2d] rounded-lg p-4 h-48 flex flex-col justify-center">
-              {selectedEra || customPrompt ? (
-                <>
-                  {selectedEra && (
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-xl">
-                        {selectedEra === "Medieval" && "🏰"}
-                        {selectedEra === "Futuristic" && "🚀"}
-                        {selectedEra === "Cyberpunk" && "🌌"}
-                      </span>
-                      <span className="text-white text-sm">{selectedEra}</span>
-                    </div>
-                  )}
-                  {customPrompt && (
-                    <p className="text-white text-sm opacity-90">{customPrompt}</p>
-                  )}
-                </>
-              ) : (
-                <span className="text-gray-500 text-sm">No prompt specified</span>
-              )}
-            </div>
-          </div>
+        
 
-          {/* Transformation Progress */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Status</h3>
-            <div className="bg-[#2d2d2d] rounded-lg p-4 h-48 flex flex-col justify-center">
-              <div className="space-y-3">
-                {steps.map((step) => (
-                  <div
-                    key={step.id}
-                    className={`flex items-center gap-3 text-sm transition-all ${
-                      step.id === currentStep
-                        ? "text-violet-400 font-semibold"
-                        : step.id < currentStep
-                        ? "text-green-400"
-                        : "text-gray-500"
-                    }`}
-                  >
-                    <span className="text-lg">{step.icon}</span>
-                    <span>{step.label}</span>
-                    {step.id === currentStep && (
-                      <span className="animate-pulse text-violet-400">●</span>
-                    )}
-                    {step.id < currentStep && (
-                      <span className="text-green-400">✔</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+                     {/* Generated Image */}
+           <div className="space-y-4">
+             <h3 className="text-lg font-semibold text-white">Generated</h3>
+             <div className="bg-[#2d2d2d] rounded-lg p-4 flex items-center justify-center">
+               {isLoading ? (
+                 <div className="text-center">
+                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-400 mx-auto mb-2"></div>
+                   <span className="text-gray-400 text-sm">Transforming...</span>
+                 </div>
+               ) : error ? (
+                 <div className="text-center text-red-400">
+                   <div className="text-2xl mb-2">⚠️</div>
+                   <span className="text-sm">Error: {error}</span>
+                 </div>
+               ) : transformedImage ? (
+                 <img
+                   src={transformedImage}
+                   alt="Generated"
+                   className="w-full h-full object-cover rounded-lg"
+                 />
+               ) : (
+                 <span className="text-gray-500">Ready to transform</span>
+               )}
+             </div>
+           </div>
         </div>
 
-        {/* Futuristic Loader */}
-        <div className="mt-8 w-full">
-          <div className="h-2 w-full bg-[#333] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 animate-[progress_8s_linear_forwards]"
-              style={{
-                width: `${(currentStep / steps.length) * 100}%`,
-                transition: "width 0.5s ease",
-              }}
-            ></div>
-          </div>
-        </div>
+                 {/* Progress Bar */}
+         <div className="mt-8 w-full">
+           <div className="h-2 w-full bg-[#333] rounded-full overflow-hidden">
+             <div
+               className="h-full bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 transition-all duration-500 ease-out"
+               style={{
+                 width: isLoading 
+                   ? `${(currentStep / steps.length) * 100}%` 
+                   : transformedImage 
+                     ? "100%" 
+                     : "0%",
+               }}
+             ></div>
+           </div>
+                        {(transformedImage || error) && !isLoading && (
+               <div className="mt-4 text-center">
+                 <button
+                   onClick={onClose}
+                   className="px-6 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-full transition-colors"
+                 >
+                   Close
+                 </button>
+               </div>
+             )}
+         </div>
       </div>
     </div>
   );
