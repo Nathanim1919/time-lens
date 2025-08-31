@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TransformingModalProps {
   isOpen: boolean;
@@ -14,18 +15,16 @@ interface TransformingModalProps {
 }
 
 const steps = [
-  { id: 1, label: "Getting image...", icon: "🖼️" },
-  { id: 2, label: "Understanding prompt...", icon: "🤖" },
-  { id: 3, label: "Starting transformation...", icon: "⚡" },
-  { id: 4, label: "Finalizing...", icon: "✨" },
+  { id: 1, label: "Analyzing image", icon: "🖼️" },
+  { id: 2, label: "Understanding your request", icon: "🤖" },
+  { id: 3, label: "Crafting the transformation", icon: "⚡" },
+  { id: 4, label: "Adding final touches", icon: "✨" },
 ];
 
 export default function TransformingModal({
   isOpen,
   onClose,
   selectedImage,
-  selectedEra,
-  customPrompt,
   transformedImage,
   isLoading = false,
   error,
@@ -43,12 +42,11 @@ export default function TransformingModal({
         } else {
           clearInterval(interval);
         }
-      }, 2000); // ⏱️ 2s per step
+      }, 1800);
       return () => clearInterval(interval);
     }
   }, [isOpen]);
 
-  // Reset step when transformation completes
   useEffect(() => {
     if (transformedImage && !isLoading) {
       setCurrentStep(steps.length);
@@ -58,17 +56,30 @@ export default function TransformingModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-gradient-to-br from-[#1b1b1b] to-[#262626] border border-violet-500/30 rounded-2xl p-8 max-w-4xl w-full h-[90%] mx-4 shadow-xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-md"
+        onClick={onClose}
+      ></div>
+
+      {/* Modal */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="relative z-10 w-full max-w-3xl h-[90%] bg-[#1c1c1e]/90 rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold text-white">AI Transformation</h1>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
+          <h1 className="text-xl font-semibold text-white">Transforming</h1>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-[#333333] transition-colors"
+            className="p-2 rounded-full hover:bg-white/10 transition"
           >
             <svg
-              className="w-6 h-6"
+              className="w-6 h-6 text-gray-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -78,79 +89,82 @@ export default function TransformingModal({
           </button>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Original Image */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Original</h3>
-            <div className="bg-[#2d2d2d] rounded-lg p-4 flex items-center justify-center">
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Original */}
+          <div>
+            <p className="text-sm text-gray-400 mb-2">Original</p>
+            <div className="rounded-2xl bg-black/30 aspect-square flex items-center justify-center overflow-hidden">
               {selectedImage ? (
                 <img
                   src={selectedImage}
                   alt="Original"
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full object-cover"
                 />
               ) : (
-                <span className="text-gray-500">No image selected</span>
+                <span className="text-gray-500">No image</span>
               )}
             </div>
           </div>
 
-        
-
-                     {/* Generated Image */}
-           <div className="space-y-4">
-             <h3 className="text-lg font-semibold text-white">Generated</h3>
-             <div className="bg-[#2d2d2d] rounded-lg p-4 flex items-center justify-center">
-               {isLoading ? (
-                 <div className="text-center">
-                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-400 mx-auto mb-2"></div>
-                   <span className="text-gray-400 text-sm">Transforming...</span>
-                 </div>
-               ) : error ? (
-                 <div className="text-center text-red-400">
-                   <div className="text-2xl mb-2">⚠️</div>
-                   <span className="text-sm">Error: {error}</span>
-                 </div>
-               ) : transformedImage ? (
-                 <img
-                   src={transformedImage}
-                   alt="Generated"
-                   className="w-full h-full object-cover rounded-lg"
-                 />
-               ) : (
-                 <span className="text-gray-500">Ready to transform</span>
-               )}
-             </div>
-           </div>
+          {/* Generated */}
+          <div>
+            <p className="text-sm text-gray-400 mb-2">Generated</p>
+            <div className="rounded-2xl bg-black/30 aspect-square flex items-center justify-center overflow-hidden">
+              {isLoading ? (
+                <div className="flex flex-col items-center">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-violet-400 mb-3"></div>
+                  <span className="text-gray-400 text-sm">
+                    {steps[currentStep - 1]?.label}
+                  </span>
+                </div>
+              ) : error ? (
+                <div className="text-center text-red-400">
+                  <div className="text-2xl mb-2">⚠️</div>
+                  <span className="text-sm">{error}</span>
+                </div>
+              ) : transformedImage ? (
+                <img
+                  src={transformedImage}
+                  alt="Generated"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-gray-500">Ready to transform</span>
+              )}
+            </div>
+          </div>
         </div>
 
-                 {/* Progress Bar */}
-         <div className="mt-8 w-full">
-           <div className="h-2 w-full bg-[#333] rounded-full overflow-hidden">
-             <div
-               className="h-full bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500 transition-all duration-500 ease-out"
-               style={{
-                 width: isLoading 
-                   ? `${(currentStep / steps.length) * 100}%` 
-                   : transformedImage 
-                     ? "100%" 
-                     : "0%",
-               }}
-             ></div>
-           </div>
-                        {(transformedImage || error) && !isLoading && (
-               <div className="mt-4 text-center">
-                 <button
-                   onClick={onClose}
-                   className="px-6 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-full transition-colors"
-                 >
-                   Close
-                 </button>
-               </div>
-             )}
-         </div>
-      </div>
+        {/* Progress + Actions */}
+        <div className="px-6 py-4 border-t border-white/10">
+          <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden mb-4">
+            <motion.div
+              className="h-full bg-gradient-to-r from-violet-500 via-purple-500 to-pink-500"
+              initial={{ width: "0%" }}
+              animate={{
+                width: isLoading
+                  ? `${(currentStep / steps.length) * 100}%`
+                  : transformedImage
+                  ? "100%"
+                  : "0%",
+              }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+            />
+          </div>
+
+          {(transformedImage || error) && !isLoading && (
+            <div className="flex justify-center">
+              <button
+                onClick={onClose}
+                className="px-6 py-2 bg-white text-black font-medium rounded-full hover:bg-gray-200 transition"
+              >
+                Done
+              </button>
+            </div>
+          )}
+        </div>
+      </motion.div>
     </div>
   );
 }

@@ -1,7 +1,8 @@
 'use client';
 
 import { authClient } from '@/lib/auth-client';
-import { redirect } from 'next/navigation';
+import { LogOut, User } from 'lucide-react';
+import { redirect, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function ProtectedLayout({
@@ -10,6 +11,7 @@ export default function ProtectedLayout({
     children: React.ReactNode
 }) {
     const { data: session, isPending } = authClient.useSession();
+    const router = useRouter();
 
     useEffect(() => {
         if (isPending) return; // Still loading
@@ -33,39 +35,26 @@ export default function ProtectedLayout({
     }
 
     return (
-        <div className="min-h-screen overflow-hidden bg-gradient-to-br from-black via-gray-950 to-gray-900">
+        <div className="min-h-screen overflow-hidden">
             {/* Protected Navigation */}
-            <nav className="bg-black/80 backdrop-blur-sm text-white w-full z-50 shadow-lg border-b border-gray-800">
+            <nav className="backdrop-blur-sm fixed top-0 right-[100px] bottom-0 text-white h-[80%] w-[70px] my-auto z-50 grid">
                 <div className="max-w-7xl mx-auto px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        {/* Logo */}
-                        <div className="flex items-center space-x-2">
-                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
-                                <span className="text-white font-bold text-lg">T</span>
-                            </div>
-                            <span className="text-2xl font-bold tracking-wide text-white">TimeLens</span>
-                        </div>
-
+                    <div className="flex flex-col items-center">
                         {/* User Info */}
-                        <div className="flex items-center space-x-4">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-9 h-9 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
+                        <div className="flex items-center flex-col gap-6 justify-between">
+                            <div className="flex items-center space-x-3 cursor-pointer" onClick={() => router.push('/in/profile')}>
+                                <div className="w-9 h-9 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
                                     <span className="text-white font-medium text-sm">
                                         {session.user.name?.charAt(0).toUpperCase() || 'U'}
                                     </span>
                                 </div>
-                                <div className="hidden sm:block">
-                                    <p className="text-sm font-semibold text-white">{session.user.name}</p>
-                                    <p className="text-xs text-gray-400">{session.user.email}</p>
-                                </div>
                             </div>
 
-                            {/* Sign Out Button */}
                             <button
                                 onClick={() => authClient.signOut()}
-                                className="px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+                                className="px-4 py-2 cursor-pointer text-sm text-gray-300 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
                             >
-                                Sign Out
+                                <LogOut className="w-5 h-5" />
                             </button>
                         </div>
                     </div>

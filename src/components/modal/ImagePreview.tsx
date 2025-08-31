@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, ArrowLeft, ArrowRight, Maximize2, Download } from "lucide-react";
+import { X, Download, Shuffle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ImagePreviewProps {
   isOpen: boolean;
@@ -21,33 +22,16 @@ export default function ImagePreview({
   createdAt,
 }: ImagePreviewProps) {
   const [isOriginalImage, setIsOriginalImage] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
       setIsOriginalImage(false);
-    }
-  }, [isOpen]);
-
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
       document.body.style.overflow = "hidden";
     }
-
     return () => {
-      document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   const currentImageUrl = isOriginalImage
     ? originalImageUrl
@@ -56,15 +40,11 @@ export default function ImagePreview({
 
   const handleImageSwitch = () => {
     if (!canSwitch) return;
-    setIsLoading(true);
     setIsOriginalImage(!isOriginalImage);
-    // Small delay to show loading state
-    setTimeout(() => setIsLoading(false), 200);
   };
 
   const handleDownload = async () => {
     if (!currentImageUrl) return;
-
     try {
       const response = await fetch(currentImageUrl);
       const blob = await response.blob();
@@ -89,44 +69,50 @@ export default function ImagePreview({
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/90 backdrop-blur-md"
         onClick={onClose}
       />
 
-      {/* Modal Content */}
+      {/* Content */}
       <div className="relative w-full h-full flex flex-col bg-black">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-black/50 backdrop-blur-sm border-b border-gray-800">
-          <div className="flex items-center gap-4">
-            <h2 className="text-white font-semibold">
-              {isOriginalImage ? "Original Image" : "Generated Image"}
+        {/* Top Bar */}
+        <div className="absolute top-0 left-0 right-0 flex items-center justify-between p-4 bg-gradient-to-b from-black/70 to-transparent z-20">
+          <div className="flex items-center gap-3">
+            <h2 className="text-white font-medium text-sm">
+              {isOriginalImage ? "Original" : "Generated"}
             </h2>
             {eraTheme && (
-              <span className="px-3 py-1 bg-violet-600/20 text-violet-300 rounded-full text-sm border border-violet-500/30">
+              <span className="px-2 py-0.5 rounded-full bg-white/10 text-white/80 text-xs">
                 {eraTheme}
               </span>
             )}
             {createdAt && (
-              <span className="text-gray-400 text-sm">
+              <span className="text-gray-400 text-xs">
                 {new Date(createdAt).toLocaleDateString()}
               </span>
             )}
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Download Button */}
+            {canSwitch && (
+              <button
+                onClick={handleImageSwitch}
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition"
+                title="Switch image"
+              >
+                <Shuffle className="w-5 h-5" />
+              </button>
+            )}
             <button
               onClick={handleDownload}
-              className="p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-colors text-white"
-              title="Download image"
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition"
+              title="Download"
             >
               <Download className="w-5 h-5" />
             </button>
-
-            {/* Close Button */}
             <button
               onClick={onClose}
-              className="p-2 rounded-lg bg-gray-800/50 hover:bg-gray-700/50 transition-colors text-white"
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition"
               title="Close"
             >
               <X className="w-5 h-5" />
@@ -134,60 +120,21 @@ export default function ImagePreview({
           </div>
         </div>
 
-        {/* Image Container */}
-        <div className="flex-1 flex items-center justify-center p-4 relative">
-          {isLoading ? (
-            <div className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-400"></div>
-            </div>
-          ) : (
-            <div className="relative max-w-full max-h-full">
-              <img
-                src={currentImageUrl}
-                alt={isOriginalImage ? "Original image" : "Generated image"}
-                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-                style={{ maxHeight: "calc(100vh - 120px)" }}
-              />
-
-              {/* Image Switch Controls */}
-              {canSwitch && (
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-4 bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 border border-gray-700">
-                  <button
-                    onClick={handleImageSwitch}
-                    className="flex items-center gap-2 px-3 py-1 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors text-white text-sm"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    Switch to {isOriginalImage ? "Generated" : "Original"}
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+        {/* Image Area */}
+        <div className="flex-1 flex items-center justify-center">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={currentImageUrl}
+              src={currentImageUrl}
+              alt={isOriginalImage ? "Original" : "Generated"}
+              className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl"
+              initial={{ opacity: 0, scale: 1.02 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+            />
+          </AnimatePresence>
         </div>
-
-        {/* Bottom Info Bar */}
-        {canSwitch && (
-          <div className="p-4 bg-black/50 backdrop-blur-sm border-t border-gray-800">
-            <div className="flex items-center justify-center gap-6">
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-3 h-3 rounded-full ${
-                    !isOriginalImage ? "bg-violet-500" : "bg-gray-600"
-                  }`}
-                />
-                <span className="text-white text-sm">Generated</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div
-                  className={`w-3 h-3 rounded-full ${
-                    isOriginalImage ? "bg-blue-500" : "bg-gray-600"
-                  }`}
-                />
-                <span className="text-white text-sm">Original</span>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
