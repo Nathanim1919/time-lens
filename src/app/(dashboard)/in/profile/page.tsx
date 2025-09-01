@@ -108,8 +108,10 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-          <button className="ml-auto p-2 rounded-full hover:bg-white/10 transition">
-            <Settings className="w-5 h-5 text-gray-300" />
+          <button className="ml-auto py-2 px-4 rounded-full hover:bg-white/10 transition
+          cursor-pointer bg-white/10 
+          ">
+           Upgrade
           </button>
         </div>
 

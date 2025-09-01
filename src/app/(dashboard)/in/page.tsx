@@ -147,48 +147,47 @@ export default function DashboardPage() {
 
       {/* Gallery */}
       <div className="w-[70%] mx-auto">
-  {imagesLoading ? (
-    <div className="flex items-center justify-center py-16 text-gray-400">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-400 mr-3"></div>
-      Loading your images...
-    </div>
-  ) : userImages.length === 0 ? (
-    <div className="text-center py-16">
-      <div className="text-6xl mb-4">🎨</div>
-      <h3 className="text-xl font-semibold text-white mb-2">No transformations yet</h3>
-      <p className="text-gray-400">Upload an image and transform it to see your gallery.</p>
-    </div>
-  ) : (
-    <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
-      {userImages.map((image) => (
-        <div
-          key={image.id}
-          className="break-inside-avoid relative cursor-pointer rounded-2xl overflow-hidden bg-[#2a2a2a] shadow-lg"
-          onClick={() => handleImageClick(image)}
-        >
-          <img
-            src={image.generatedUrl}
-            alt={image.eraTheme}
-            className="w-full h-auto object-cover rounded-2xl transition-transform duration-200 group-hover:scale-105"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all flex items-center justify-center">
-            <div className="opacity-0 hover:opacity-100 transition-opacity text-center">
-              <p className="text-white font-medium">{image.eraTheme}</p>
-              <p className="text-xs text-gray-300">
-                {new Date(image.createdAt).toLocaleDateString()}
-              </p>
-            </div>
+        {imagesLoading ? (
+          <div className="flex items-center justify-center py-16 text-gray-400">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-400 mr-3"></div>
+            Loading your images...
           </div>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
-
+        ) : userImages.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">🎨</div>
+            <h3 className="text-xl font-semibold text-white mb-2">No transformations yet</h3>
+            <p className="text-gray-400">Upload an image and transform it to see your gallery.</p>
+          </div>
+        ) : (
+          <div className="columns-2 sm:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
+            {userImages.map((image) => (
+              <div
+                key={image.id}
+                className="break-inside-avoid relative cursor-pointer rounded-2xl overflow-hidden bg-[#2a2a2a] shadow-lg"
+                onClick={() => handleImageClick(image)}
+              >
+                <img
+                  src={image.generatedUrl}
+                  alt={image.eraTheme}
+                  className="w-full h-auto object-cover rounded-2xl transition-transform duration-200 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-all flex items-center justify-center">
+                  <div className="opacity-0 hover:opacity-100 transition-opacity text-center">
+                    <p className="text-white font-medium">{image.eraTheme}</p>
+                    <p className="text-xs text-gray-300">
+                      {new Date(image.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Bottom Action Bar */}
-      <div className="w-[70%] mx-auto fixed bottom-8 left-0 right-0 bg-[#1a1a1a]/80 backdrop-blur-xl border border-gray-700 shadow-2xl rounded-2xl p-4 flex flex-col gap-3">
+      <div className="w-[40%] mx-auto fixed bottom-8 left-0 right-0 bg-[#1a1a1a]/80 backdrop-blur-xl border border-gray-700 shadow-2xl rounded-2xl p-4 flex flex-col gap-3">
         {(selectedEra || selectedImage) && (
           <div className="flex items-center gap-3 bg-[#2a2a2a] px-3 py-2 rounded-xl">
             {selectedEra && (
@@ -279,11 +278,10 @@ export default function DashboardPage() {
           <button
             onClick={initializeImageTransformation}
             disabled={!selectedImageFile || (!selectedEra && !customPrompt)}
-            className={`px-5 py-2 rounded-full font-medium transition-colors ${
-              selectedImageFile && (selectedEra || customPrompt)
+            className={`px-5 py-2 rounded-full font-medium transition-colors ${selectedImageFile && (selectedEra || customPrompt)
                 ? "bg-violet-600 hover:bg-violet-700 text-white"
                 : "bg-[#2a2a2a] text-gray-500 cursor-not-allowed"
-            }`}
+              }`}
           >
             Generate
           </button>

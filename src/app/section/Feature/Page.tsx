@@ -7,20 +7,27 @@ export default function EraShowcase() {
     const themes = getAvailableThemes();
     const scrollContainer = useRef<HTMLDivElement>(null);
     const [isScrolling, setIsScrolling] = useState(true);
+    const [activeTheme, setActiveTheme] = useState(0);
 
     useEffect(() => {
         const container = scrollContainer.current;
         if (!container) return;
 
         let animationFrame: number;
-        let speed = 0.8; // slower, smoother
+        let speed = 0.5; // Slower, smoother scrolling
 
         const scroll = () => {
             if (isScrolling) {
                 container.scrollLeft += speed;
                 if (container.scrollLeft >= container.scrollWidth / 2) {
-                    container.scrollLeft = 0; // seamless loop
+                    container.scrollLeft = 0; // Seamless loop
                 }
+                
+                // Update active theme based on scroll position
+                const cardWidth = container.children[0]?.clientWidth || 0;
+                const scrollPos = container.scrollLeft;
+                const newActiveTheme = Math.floor(scrollPos / cardWidth) % themes.length;
+                setActiveTheme(newActiveTheme);
             }
             animationFrame = requestAnimationFrame(scroll);
         };
@@ -38,61 +45,120 @@ export default function EraShowcase() {
             container.removeEventListener('mouseenter', handleMouseEnter);
             container.removeEventListener('mouseleave', handleMouseLeave);
         };
-    }, [isScrolling]);
+    }, [isScrolling, themes.length]);
 
     return (
-        <section className="py-24 bg-gradient-to-br from-gray-950 via-gray-900 to-black relative overflow-hidden">
+        <section className="py-24 bg-black relative overflow-hidden">
+            {/* Background elements */}
+            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.3),transparent_50%)]"></div>
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+            
+            {/* Floating particles */}
+            <div className="absolute inset-0 opacity-30">
+                {[...Array(20)].map((_, i) => (
+                    <div
+                        key={i}
+                        className="absolute rounded-full bg-white"
+                        style={{
+                            width: `${Math.random() * 3 + 1}px`,
+                            height: `${Math.random() * 3 + 1}px`,
+                            top: `${Math.random() * 100}%`,
+                            left: `${Math.random() * 100}%`,
+                            animation: `float ${Math.random() * 15 + 10}s infinite ease-in-out`,
+                            animationDelay: `${Math.random() * 5}s`
+                        }}
+                    />
+                ))}
+            </div>
+
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                 {/* Heading */}
-                <div className="text-center mb-20">
-                    <div className="inline-flex items-center rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 px-5 py-2 text-sm font-medium text-blue-300 ring-1 ring-inset ring-blue-500/30 mb-6 backdrop-blur-sm">
-                        <span className="mr-2">✨</span> AI-Powered Transformations
+                <div className="text-center mb-16">
+                    <div className="inline-flex items-center rounded-full bg-gray-800/50 px-4 py-2 text-sm font-medium text-gray-300 mb-6 backdrop-blur-sm border border-gray-700">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
+                        AI Transformations
                     </div>
-                    <h2 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent mb-5 tracking-tight">
-                        Step Into Different Eras
+                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-5 tracking-tight">
+                        Journey Through Time
                     </h2>
-                    <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-                        Transform your photos with cutting-edge AI. See yourself in the past, present, and future — reimagined.
+                    <p className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                        Transform your photos across different eras with our advanced AI technology.
                     </p>
+                </div>
+
+                {/* Active theme indicator */}
+                <div className="flex justify-center mb-10">
+                    <div className="bg-gray-800/50 rounded-xl p-4 backdrop-blur-sm border border-gray-700">
+                        <div className="flex items-center space-x-3">
+                            <div className="text-2xl">{getThemeIcon(themes[activeTheme])}</div>
+                            <div>
+                                <h3 className="text-white font-medium">{getThemeDisplayName(themes[activeTheme])}</h3>
+                                <p className="text-sm text-gray-400">Currently viewing</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Horizontal scroll cards */}
                 <div 
                     ref={scrollContainer}
-                    className="flex overflow-x-auto scrollbar-hide space-x-8 pb-10 pt-2"
+                    className="flex overflow-x-auto scrollbar-hide space-x-6 pb-12 pt-2 px-2"
                 >
                     {[...themes, ...themes].map((theme, index) => (
                         <div
                             key={`${theme}-${index}`}
-                            className="flex-shrink-0 w-80 rounded-2xl border border-gray-800 p-6 bg-gradient-to-b from-gray-900/60 to-gray-950/80 backdrop-blur-xl shadow-lg shadow-purple-500/10 transform transition-all duration-500 hover:-translate-y-3 hover:scale-105 hover:shadow-purple-500/20"
+                            className="flex-shrink-0 w-72 rounded-2xl p-6 bg-gray-900/50 backdrop-blur-sm border border-gray-800 transition-all duration-500 hover:border-gray-600 hover:scale-105"
                         >
-                            <div className="text-6xl mb-6 text-center transition-transform duration-300 hover:scale-125">
+                            <div className="text-5xl mb-5 text-center transition-transform duration-300">
                                 {getThemeIcon(theme)}
                             </div>
-                            <h3 className="text-2xl font-semibold text-white text-center mb-3">
+                            <h3 className="text-xl font-semibold text-white text-center mb-3">
                                 {getThemeDisplayName(theme)}
                             </h3>
-                            <p className="text-gray-400 text-sm text-center leading-relaxed">
-                                Experience the {getThemeDisplayName(theme).toLowerCase()} era with stunning AI realism.
+                            <p className="text-gray-400 text-sm text-center leading-relaxed mb-4">
+                                Experience the essence of {getThemeDisplayName(theme).toLowerCase()} through AI transformation.
                             </p>
-                            <div className="mt-6 flex justify-center">
-                                <span className="inline-flex items-center text-xs bg-blue-500/10 text-blue-300 px-3 py-1 rounded-full border border-blue-500/30">
-                                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-ping"></span>
-                                    AI Powered
+                            <div className="mt-4 flex justify-center">
+                                <span className="inline-flex items-center text-xs bg-blue-500/10 text-blue-300 px-3 py-1 rounded-full">
+                                    AI Generated
                                 </span>
                             </div>
                         </div>
                     ))}
                 </div>
 
+                {/* Navigation dots */}
+                <div className="flex justify-center space-x-2 mb-12">
+                    {themes.map((_, index) => (
+                        <button
+                            key={index}
+                            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                                index === activeTheme ? 'bg-white w-4' : 'bg-gray-700'
+                            }`}
+                            onClick={() => {
+                                const container = scrollContainer.current;
+                                if (container) {
+                                    const cardWidth = container.children[0]?.clientWidth || 0;
+                                    container.scrollLeft = index * cardWidth;
+                                    setActiveTheme(index);
+                                }
+                            }}
+                        />
+                    ))}
+                </div>
+
                 {/* CTA */}
-                <div className="text-center mt-16">
-                    <button className="inline-flex items-center px-7 py-3.5 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white font-medium rounded-xl hover:from-blue-500 hover:via-purple-500 hover:to-pink-500 transition-all duration-500 shadow-lg hover:shadow-purple-500/30">
-                        Try It Now
-                        <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <div className="text-center">
+                    <button className="inline-flex items-center px-6 py-3 bg-white text-black font-medium rounded-xl hover:bg-gray-100 transition-all duration-300">
+                        Start Transforming
+                        <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
                     </button>
+                    <p className="text-gray-400 text-sm mt-4">
+                        Upload your photo and choose any era
+                    </p>
                 </div>
             </div>
 
@@ -103,6 +169,10 @@ export default function EraShowcase() {
                 }
                 .scrollbar-hide::-webkit-scrollbar {
                     display: none;
+                }
+                @keyframes float {
+                    0%, 100% { transform: translateY(0) translateX(0); }
+                    50% { transform: translateY(-15px) translateX(8px); }
                 }
             `}</style>
         </section>
