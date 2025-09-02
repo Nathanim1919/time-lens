@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -15,25 +9,33 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
-  images        Image[]
+  id                    String         @id
+  name                  String
+  email                 String         @unique
+  emailVerified         Boolean
+  image                 String?
+  createdAt             DateTime
+  updatedAt             DateTime
+  currentPlan           String         @default("free")
+  nextBillingDate       DateTime?
+  polarCustomerId       String?
+  subscriptionEndDate   DateTime?
+  subscriptionStartDate DateTime?
+  subscriptionStatus    String         @default("active")
+  accounts              Account[]
+  images                Image[]
+  sessions              Session[]
+  subscriptions         Subscription[]
+  transactions          Transaction[]
+  usageLogs             UsageLog[]
 
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime
   updatedAt DateTime
   ipAddress String?
@@ -41,7 +43,6 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@map("session")
 }
 
@@ -50,7 +51,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -60,25 +60,78 @@ model Account {
   password              String?
   createdAt             DateTime
   updatedAt             DateTime
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("account")
 }
 
-
 model Image {
   id           String   @id @default(uuid())
   userId       String
-  user         User     @relation(fields: [userId], references: [id])
-  
-  originalUrl  String   // Supabase storage URL for uploaded selfie
-  generatedUrl String   // Supabase storage URL for AI output
-  eraTheme     String   // "medieval", "cyberpunk", etc.
-
+  originalUrl  String
+  generatedUrl String
+  eraTheme     String
   createdAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
 
   @@map("image")
 }
 
+model Subscription {
+  id              String        @id
+  userId          String
+  planType        String
+  status          String
+  startDate       DateTime
+  endDate         DateTime?
+  nextBillingDate DateTime
+  polarCustomerId String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions    Transaction[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([nextBillingDate])
+  @@map("subscription")
+}
+
+model Transaction {
+  id              String        @id
+  userId          String
+  subscriptionId  String?
+  amountCents     Int
+  currency        String        @default("USD")
+  status          String
+  transactionType String
+  createdAt       DateTime      @default(now())
+  subscription    Subscription? @relation(fields: [subscriptionId], references: [id])
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([subscriptionId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("transaction")
+}
+
+model UsageLog {
+  id                   BigInt   @id @default(autoincrement())
+  userId               String
+  date                 DateTime @db.Date
+  transformationsCount Int      @default(0)
+  planType             String
+  dailyLimit           Int
+  createdAt            DateTime @default(now())
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+  @@index([planType])
+  @@map("usage_log")
+}
 
 model Verification {
   id         String    @id
