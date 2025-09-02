@@ -21,7 +21,12 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-  trustedOrigins: [process.env.CORS_ORIGIN || ""],
+  trustedOrigins: [
+    process.env.CORS_ORIGIN || "",
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "https://ee8575b17ecc.ngrok-free.app"
+  ],
   emailAndPassword: {
     enabled: true,
   },
@@ -59,12 +64,24 @@ export const auth = betterAuth({
            },
            onOrderPaid: async (payload) => {
              console.log("Order paid:", payload);
+             // Process the order payment
+             await import('@/services/TransactionService').then(({ TransactionService }) => {
+               return TransactionService.processPolarWebhook(payload);
+             });
            },
            onSubscriptionActive: async (payload) => {
              console.log("Subscription activated:", payload);
+             // Handle subscription activation
+             await import('@/services/SubscriptionService').then(({ SubscriptionService }) => {
+               return SubscriptionService.handleSubscriptionActivated(payload);
+             });
            },
            onSubscriptionCanceled: async (payload) => {
              console.log("Subscription canceled:", payload);
+             // Handle subscription cancellation
+             await import('@/services/SubscriptionService').then(({ SubscriptionService }) => {
+               return SubscriptionService.handleSubscriptionCanceled(payload);
+             });
            },
            onPayload: async (payload) => {
              console.log("Polar webhook received:", payload);

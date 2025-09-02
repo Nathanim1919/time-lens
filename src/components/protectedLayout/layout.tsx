@@ -18,6 +18,8 @@ export default function ProtectedLayout({
         if (!session) {
             redirect("/login");
         }
+
+        console.log(session);
     }, [session, isPending]);
 
     // Show loading state while checking authentication

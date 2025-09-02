@@ -97,8 +97,8 @@ export interface User {
   // UI Component Props
   export interface ButtonProps {
     children: React.ReactNode;
-    variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
-    size?: 'sm' | 'md' | 'lg';
+    variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success' | 'warning' | 'gradient' | 'glass';
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     disabled?: boolean;
     onClick?: () => void;
     className?: string;

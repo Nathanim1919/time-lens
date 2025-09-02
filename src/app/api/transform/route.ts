@@ -10,7 +10,8 @@ import {
   getImageUrl,
   deleteImage
 } from '@/lib/supabase';
-import { generateDecadeImage } from '@/services/AiService';
+import { generateDecadeImage, getEraPrompt } from '@/services/AiService';
+import { UsageService } from '@/services/UsageService';
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,6 +27,16 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = session.user.id;
+
+    // Check usage limits before processing
+    const usageCheck = await UsageService.canTransform(userId);
+    if (!usageCheck.canTransform) {
+      return NextResponse.json({
+        error: 'Daily limit reached',
+        details: `You have used ${usageCheck.limit - usageCheck.remaining} of ${usageCheck.limit} daily transformations. Please upgrade your plan for more transformations.`,
+        usage: usageCheck
+      }, { status: 429 });
+    }
 
     // Parse request body
     const formData = await request.formData();
@@ -85,7 +96,17 @@ export async function POST(request: NextRequest) {
       const imageDataUrl = `data:${mimeType};base64,${base64}`;
 
       // Step 3: Generate AI transformation
-      const prompt = customPrompt || eraTheme;
+      let prompt: string;
+      if (customPrompt) {
+        // Use custom prompt if provided
+        prompt = customPrompt;
+      } else if (eraTheme) {
+        // Use professional era prompt if era theme is selected
+        prompt = getEraPrompt(eraTheme);
+      } else {
+        throw new Error('No era theme or custom prompt provided');
+      }
+      
       const transformedImageDataUrl = await generateDecadeImage(imageDataUrl, prompt);
 
       // Step 4: Upload transformed image to Supabase
@@ -107,6 +128,9 @@ export async function POST(request: NextRequest) {
         }
       });
 
+      // Step 6: Increment usage counter
+      await UsageService.incrementUsage(userId);
+
       return NextResponse.json({
         success: true,
         image: {
@@ -115,6 +139,10 @@ export async function POST(request: NextRequest) {
           generatedUrl: transformedUrl,
           eraTheme: imageRecord.eraTheme,
           createdAt: imageRecord.createdAt
+        },
+        usage: {
+          remaining: usageCheck.remaining - 1,
+          limit: usageCheck.limit
         }
       });
 

@@ -1,19 +1,29 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
 
 export default function DashboardPage() {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const checkoutId = searchParams.get('checkout_id');
     const [customerState, setCustomerState] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         loadCustomerState();
-    }, []);
+        
+        // Auto-redirect to profile page after 3 seconds if checkout_id is present
+        if (checkoutId) {
+            const timer = setTimeout(() => {
+                router.push('/in/profile');
+            }, 3000);
+            
+            return () => clearTimeout(timer);
+        }
+    }, [checkoutId, router]);
 
     const loadCustomerState = async () => {
         try {
@@ -56,6 +66,9 @@ export default function DashboardPage() {
                             <h1 className="text-3xl font-bold text-white mb-4">Welcome to TimeLens!</h1>
                             <p className="text-gray-300 text-lg mb-6">
                                 Your subscription has been activated successfully. You can now start transforming your photos with AI.
+                            </p>
+                            <p className="text-blue-400 text-sm mb-4">
+                                Redirecting to your profile in 3 seconds...
                             </p>
                             <div className="text-sm text-gray-400">
                                 Checkout ID: {checkoutId}
