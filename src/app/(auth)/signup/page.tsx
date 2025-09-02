@@ -5,124 +5,165 @@ import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { useState } from "react";
+import { Eye, EyeOff, Sparkles, User } from "lucide-react";
 
 export default function SignupPage() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await authClient.signUp.email({
-            email, // user email address
-            password, // user password -> min 8 characters by default
-            name, // user display name
-            callbackURL: "/in" // A URL to redirect to after the user verifies their email (optional)
-        }, {
-            onRequest: (ctx) => {
-                //show loading
-                setIsLoading(true);
-            },
-            onSuccess: (ctx) => {
-                //redirect to the dashboard or sign in page
-                setIsLoading(false);
-                redirect("/login");
-            },
-            onError: (ctx) => {
-                // display the error message
-                alert(ctx.error.message);
-            },
-        });
+        try {
+            await authClient.signUp.email({
+                email,
+                password,
+                name,
+                callbackURL: "/in"
+            }, {
+                onRequest: (ctx) => {
+                    setIsLoading(true);
+                },
+                onSuccess: (ctx) => {
+                    setIsLoading(false);
+                    redirect("/login");
+                },
+                onError: (ctx) => {
+                    console.error('Signup error:', ctx.error);
+                    setIsLoading(false);
+                    
+                    if (ctx.error.message.includes('database') || ctx.error.message.includes('connection')) {
+                        alert('Database connection issue. Please try again in a few moments.');
+                    } else {
+                        alert(ctx.error.message);
+                    }
+                },
+            });
+        } catch (error) {
+            console.error('Signup error:', error);
+            setIsLoading(false);
+            alert('An unexpected error occurred. Please try again.');
+        }
     }
 
-
     return (
-        <div className="min-h-screen bg-gradient-to-br from-black via-gray-950 to-gray-900 grid place-items-center px-4">
-            <div className="w-full max-w-md p-8 rounded-2xl shadow-2xl border border-gray-800 bg-gradient-to-b from-gray-900/70 to-gray-950/80 backdrop-blur-xl">
-                {/* Heading */}
-                <h1 className="text-3xl font-bold text-white text-center mb-2">
-                    Create an Account
-                </h1>
-                <p className="text-gray-400 text-center mb-8">
-                    Join <span className="text-violet-400 font-semibold">TimeLens</span> and start your journey today
-                </p>
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900/10 to-slate-900 flex items-center justify-center px-4">
+            {/* Subtle background elements */}
+            <div className="absolute inset-0">
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
+            </div>
 
-                {/* Form */}
-                <form
-                    onSubmit={handleSignup}
-                    className="space-y-5">
-                    <div>
-                        <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Full Name"
-                            className="w-full px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition"
-                        />
-                    </div>
-                    <div>
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Email"
-                            className="w-full px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition"
-                        />
-                    </div>
-                    <div>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Password"
-                            className="w-full px-4 py-3 rounded-lg bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition"
-                        />
-                    </div>
-                    <Button
-                        variant="primary"
-                        size="lg"
-                        disabled={isLoading}
-                        
-                        type="submit"
-                        className="w-full py-3 flex items-center justify-center gap-3 rounded-lg bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold shadow-lg hover:scale-[1.02] hover:shadow-violet-500/30 transition-all"
-                    >
-                  
-                        Sign Up
-                    </Button>
-                </form>
-
-                {/* OR Divider */}
-                <div className="flex items-center my-6">
-                    <div className="flex-grow h-px bg-gray-800"></div>
-                    <span className="px-3 text-gray-500 text-sm">or</span>
-                    <div className="flex-grow h-px bg-gray-800"></div>
+            <div className="relative z-10 w-full max-w-sm">
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <h1 className="text-2xl font-semibold text-white mb-2">
+                        Create account
+                    </h1>
+                    <p className="text-sm text-gray-400">
+                        Join TimeLens and start transforming
+                    </p>
                 </div>
 
-                {/* Google Signup */}
-                <Button
-                    variant="outline"
-                    size="lg"
-                    disabled={isLoading}
-                    type="submit"
-                    className="w-full py-3 flex items-center justify-center gap-3 rounded-lg border border-gray-700 text-gray-300 hover:bg-gray-800 transition"
-                >
-                    <img
-                        src="https://www.svgrepo.com/show/475656/google-color.svg"
-                        alt="Google"
-                        className="w-5 h-5"
-                    />
-                    Continue with Google
-                </Button>
+                {/* Signup Form */}
+                <div className="bg-slate-800/30 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6">
+                    <form onSubmit={handleSignup} className="space-y-4">
+                        {/* Name Field */}
+                        <div>
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Full name"
+                                className="w-full px-3 py-2.5 rounded-lg bg-slate-700/50 border border-slate-600/50 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                                required
+                            />
+                        </div>
 
-                {/* Footer */}
-                <p className="text-gray-500 text-center text-sm mt-8">
-                    Already have an account?{" "}
-                    <Link href="/login" className="text-violet-400 hover:underline">
-                        Log in
-                    </Link>
-                </p>
+                        {/* Email Field */}
+                        <div>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Email"
+                                className="w-full px-3 py-2.5 rounded-lg bg-slate-700/50 border border-slate-600/50 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                                required
+                            />
+                        </div>
+
+                        {/* Password Field */}
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Password"
+                                className="w-full px-3 py-2.5 pr-10 rounded-lg bg-slate-700/50 border border-slate-600/50 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                                required
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300 transition-colors"
+                            >
+                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                        </div>
+
+                        {/* Signup Button */}
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            disabled={isLoading}
+                            loading={isLoading}
+                            type="submit"
+                            className="w-full"
+                        >
+                            <span className="flex items-center gap-2">
+                                <User className="w-3 h-3" />
+                                Create account
+                            </span>
+                        </Button>
+                    </form>
+
+                    {/* OR Divider */}
+                    <div className="flex items-center my-6">
+                        <div className="flex-grow h-px bg-slate-600/50"></div>
+                        <span className="px-3 text-gray-400 text-xs">or</span>
+                        <div className="flex-grow h-px bg-slate-600/50"></div>
+                    </div>
+
+                    {/* Google Signup */}
+                    <Button
+                        variant="outline"
+                        size="lg"
+                        disabled={isLoading}
+                        className="w-full"
+                    >
+                        <img
+                            src="https://www.svgrepo.com/show/475656/google-color.svg"
+                            alt="Google"
+                            className="w-4 h-4"
+                        />
+                        Continue with Google
+                    </Button>
+
+                    {/* Footer */}
+                    <div className="text-center mt-6">
+                        <p className="text-xs text-gray-400">
+                            Already have an account?{" "}
+                            <Link 
+                                href="/login" 
+                                className="text-purple-400 hover:text-purple-300 font-medium hover:underline transition-colors"
+                            >
+                                Sign in
+                            </Link>
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     );
