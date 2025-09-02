@@ -5,176 +5,186 @@ import { getAvailableThemes, getThemeDisplayName, getThemeIcon } from "@/lib/ai"
 
 export default function EraShowcase() {
     const themes = getAvailableThemes();
-    const scrollContainer = useRef<HTMLDivElement>(null);
-    const [isScrolling, setIsScrolling] = useState(true);
     const [activeTheme, setActiveTheme] = useState(0);
-
-    useEffect(() => {
-        const container = scrollContainer.current;
-        if (!container) return;
-
-        let animationFrame: number;
-        let speed = 0.5; // Slower, smoother scrolling
-
-        const scroll = () => {
-            if (isScrolling) {
-                container.scrollLeft += speed;
-                if (container.scrollLeft >= container.scrollWidth / 2) {
-                    container.scrollLeft = 0; // Seamless loop
-                }
-                
-                // Update active theme based on scroll position
-                const cardWidth = container.children[0]?.clientWidth || 0;
-                const scrollPos = container.scrollLeft;
-                const newActiveTheme = Math.floor(scrollPos / cardWidth) % themes.length;
-                setActiveTheme(newActiveTheme);
-            }
-            animationFrame = requestAnimationFrame(scroll);
-        };
-
-        animationFrame = requestAnimationFrame(scroll);
-
-        const handleMouseEnter = () => setIsScrolling(false);
-        const handleMouseLeave = () => setIsScrolling(true);
-
-        container.addEventListener('mouseenter', handleMouseEnter);
-        container.addEventListener('mouseleave', handleMouseLeave);
-
-        return () => {
-            cancelAnimationFrame(animationFrame);
-            container.removeEventListener('mouseenter', handleMouseEnter);
-            container.removeEventListener('mouseleave', handleMouseLeave);
-        };
-    }, [isScrolling, themes.length]);
+    const [hoveredTheme, setHoveredTheme] = useState<number | null>(null);
 
     return (
-        <section className="py-24 bg-black relative overflow-hidden">
-            {/* Background elements */}
-            <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,rgba(120,119,198,0.3),transparent_50%)]"></div>
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
-            
-            {/* Floating particles */}
-            <div className="absolute inset-0 opacity-30">
-                {[...Array(20)].map((_, i) => (
-                    <div
-                        key={i}
-                        className="absolute rounded-full bg-white"
-                        style={{
-                            width: `${Math.random() * 3 + 1}px`,
-                            height: `${Math.random() * 3 + 1}px`,
-                            top: `${Math.random() * 100}%`,
-                            left: `${Math.random() * 100}%`,
-                            animation: `float ${Math.random() * 15 + 10}s infinite ease-in-out`,
-                            animationDelay: `${Math.random() * 5}s`
-                        }}
-                    />
-                ))}
+        <section className="relative py-32 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900 overflow-hidden">
+            {/* Background Elements */}
+            <div className="absolute inset-0">
+                {/* Gradient Orbs */}
+                <div className="absolute top-20 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl opacity-60"></div>
+                <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl opacity-60"></div>
+                
+                {/* Grid Pattern */}
+                <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%239C92AC&quot; fill-opacity=&quot;0.05&quot;%3E%3Ccircle cx=&quot;30&quot; cy=&quot;30&quot; r=&quot;1&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-                {/* Heading */}
-                <div className="text-center mb-16">
-                    <div className="inline-flex items-center rounded-full bg-gray-800/50 px-4 py-2 text-sm font-medium text-gray-300 mb-6 backdrop-blur-sm border border-gray-700">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
-                        AI Transformations
+            <div className="relative z-10 max-w-7xl mx-auto px-6">
+                {/* Header Section */}
+                <div className="text-center mb-20">
+                    {/* Badge */}
+                    <div className="inline-flex items-center px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full text-sm font-medium text-white/80 mb-8">
+                        <div className="w-2 h-2 bg-purple-400 rounded-full mr-2 animate-pulse"></div>
+                        AI-Powered Transformations
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-5 tracking-tight">
-                        Journey Through Time
+
+                    {/* Main Heading */}
+                    <h2 className="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                        Transform Across
+                        <br />
+                        <span className="bg-gradient-to-r from-purple-200 to-blue-200 bg-clip-text text-transparent">
+                            Every Era
+                        </span>
                     </h2>
-                    <p className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                        Transform your photos across different eras with our advanced AI technology.
+
+                    {/* Subtitle */}
+                    <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                        Experience yourself in different historical periods, artistic styles, and cultural contexts with our advanced AI technology.
                     </p>
                 </div>
 
-                {/* Active theme indicator */}
-                <div className="flex justify-center mb-10">
-                    <div className="bg-gray-800/50 rounded-xl p-4 backdrop-blur-sm border border-gray-700">
-                        <div className="flex items-center space-x-3">
-                            <div className="text-2xl">{getThemeIcon(themes[activeTheme])}</div>
-                            <div>
-                                <h3 className="text-white font-medium">{getThemeDisplayName(themes[activeTheme])}</h3>
-                                <p className="text-sm text-gray-400">Currently viewing</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Horizontal scroll cards */}
-                <div 
-                    ref={scrollContainer}
-                    className="flex overflow-x-auto scrollbar-hide space-x-6 pb-12 pt-2 px-2"
-                >
-                    {[...themes, ...themes].map((theme, index) => (
+                {/* Features Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
+                    {themes.slice(0, 6).map((theme, index) => (
                         <div
-                            key={`${theme}-${index}`}
-                            className="flex-shrink-0 w-72 rounded-2xl p-6 bg-gray-900/50 backdrop-blur-sm border border-gray-800 transition-all duration-500 hover:border-gray-600 hover:scale-105"
+                            key={theme}
+                            className={`group relative p-6 rounded-2xl border transition-all duration-500 cursor-pointer ${
+                                hoveredTheme === index 
+                                    ? 'border-purple-400 bg-white/5 shadow-2xl shadow-purple-500/20 scale-105' 
+                                    : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-xl backdrop-blur-sm'
+                            }`}
+                            onMouseEnter={() => setHoveredTheme(index)}
+                            onMouseLeave={() => setHoveredTheme(null)}
                         >
-                            <div className="text-5xl mb-5 text-center transition-transform duration-300">
+                            {/* Icon */}
+                            <div className={`text-3xl mb-4 transition-all duration-500 ${
+                                hoveredTheme === index ? 'scale-110' : ''
+                            }`}>
                                 {getThemeIcon(theme)}
                             </div>
-                            <h3 className="text-xl font-semibold text-white text-center mb-3">
+
+                            {/* Content */}
+                            <h3 className="text-lg font-semibold text-white mb-2">
                                 {getThemeDisplayName(theme)}
                             </h3>
-                            <p className="text-gray-400 text-sm text-center leading-relaxed mb-4">
-                                Experience the essence of {getThemeDisplayName(theme).toLowerCase()} through AI transformation.
+                            <p className="text-gray-400 text-sm leading-relaxed mb-4">
+                                Experience the {getThemeDisplayName(theme).toLowerCase()} aesthetic with AI transformation.
                             </p>
-                            <div className="mt-4 flex justify-center">
-                                <span className="inline-flex items-center text-xs bg-blue-500/10 text-blue-300 px-3 py-1 rounded-full">
+
+                            {/* CTA Button */}
+                            <div className="flex items-center justify-between">
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300">
                                     AI Generated
                                 </span>
+                                <div className={`w-6 h-6 rounded-full bg-white/10 flex items-center justify-center transition-all duration-300 ${
+                                    hoveredTheme === index ? 'bg-purple-500/20 text-purple-300' : 'text-gray-400'
+                                }`}>
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
                             </div>
+
+                            {/* Hover Effect Overlay */}
+                            <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-600/10 to-blue-600/10 opacity-0 transition-opacity duration-500 ${
+                                hoveredTheme === index ? 'opacity-100' : ''
+                            }`}></div>
                         </div>
                     ))}
                 </div>
 
-                {/* Navigation dots */}
-                <div className="flex justify-center space-x-2 mb-12">
-                    {themes.map((_, index) => (
-                        <button
-                            key={index}
-                            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                                index === activeTheme ? 'bg-white w-4' : 'bg-gray-700'
-                            }`}
-                            onClick={() => {
-                                const container = scrollContainer.current;
-                                if (container) {
-                                    const cardWidth = container.children[0]?.clientWidth || 0;
-                                    container.scrollLeft = index * cardWidth;
-                                    setActiveTheme(index);
-                                }
-                            }}
-                        />
-                    ))}
+                {/* Interactive Showcase */}
+                <div className="relative mb-20">
+                    <div className="text-center mb-12">
+                        <h3 className="text-3xl font-bold text-white mb-4">
+                            See It In Action
+                        </h3>
+                        <p className="text-gray-300 max-w-2xl mx-auto">
+                            Watch how our AI transforms your photos across different eras and styles in real-time.
+                        </p>
+                    </div>
+
+                    {/* Interactive Demo */}
+                    <div className="relative max-w-4xl mx-auto">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Original */}
+                            <div className="text-center">
+                                <div className="relative mb-4">
+                                    <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-br from-slate-800 to-slate-700 border-2 border-slate-600">
+                                        <img 
+                                            src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=500&q=80" 
+                                            alt="Original" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="absolute -top-2 -left-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                        ✓
+                                    </div>
+                                </div>
+                                <h4 className="font-semibold text-white">Original Photo</h4>
+                                <p className="text-sm text-gray-400">Your starting point</p>
+                            </div>
+
+                            {/* Arrow */}
+                            <div className="flex items-center justify-center">
+                                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center text-white">
+                                    <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            {/* Transformed */}
+                            <div className="text-center">
+                                <div className="relative mb-4">
+                                    <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-br from-purple-800 to-blue-800 border-2 border-purple-600">
+                                        <img 
+                                            src="https://images.unsplash.com/photo-1516724562728-afc824a36e84?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=500&q=80" 
+                                            alt="Transformed" 
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="absolute -top-2 -left-2 w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                        ✨
+                                    </div>
+                                </div>
+                                <h4 className="font-semibold text-white">AI Transformed</h4>
+                                <p className="text-sm text-gray-400">Renaissance style</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* CTA */}
+                {/* Stats Section */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+                    <div className="text-center p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+                        <div className="text-4xl font-bold text-white mb-2">50+</div>
+                        <div className="text-gray-300">Available Styles</div>
+                    </div>
+                    <div className="text-center p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+                        <div className="text-4xl font-bold text-white mb-2">&lt;30s</div>
+                        <div className="text-gray-300">Processing Time</div>
+                    </div>
+                    <div className="text-center p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10">
+                        <div className="text-4xl font-bold text-white mb-2">4K</div>
+                        <div className="text-gray-300">Output Quality</div>
+                    </div>
+                </div>
+
+                {/* CTA Section */}
                 <div className="text-center">
-                    <button className="inline-flex items-center px-6 py-3 bg-white text-black font-medium rounded-xl hover:bg-gray-100 transition-all duration-300">
-                        Start Transforming
-                        <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    <div className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+                        Start Your Transformation
+                        <svg className="ml-3 w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
-                    </button>
-                    <p className="text-gray-400 text-sm mt-4">
-                        Upload your photo and choose any era
+                    </div>
+                    <p className="text-gray-400 mt-4">
+                        Upload your photo and choose from 50+ unique styles
                     </p>
                 </div>
             </div>
-
-            <style jsx>{`
-                .scrollbar-hide {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-                }
-                .scrollbar-hide::-webkit-scrollbar {
-                    display: none;
-                }
-                @keyframes float {
-                    0%, 100% { transform: translateY(0) translateX(0); }
-                    50% { transform: translateY(-15px) translateX(8px); }
-                }
-            `}</style>
         </section>
     );
 }

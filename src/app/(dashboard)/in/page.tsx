@@ -26,10 +26,6 @@ export default function DashboardPage() {
     { name: "Victorian Era", icon: "🎩" },
     { name: "1920s Jazz Age", icon: "🍸" },
     { name: "1970s Retro", icon: "🕺" },
-    { name: "Cyberpunk Future", icon: "🌌" },
-    { name: "Space Explorer", icon: "🚀" },
-    { name: "Anime Style", icon: "🎨" },
-    { name: "Superhero", icon: "🦸" },
   ];
 
   const fileInputRef = useRef<HTMLInputElement>(null);
