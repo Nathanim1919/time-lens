@@ -1,10 +1,10 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import { getAvailableThemes, getThemeDisplayName, getThemeIcon } from "@/lib/ai";
+// import { getAvailableThemes, getThemeDisplayName, getThemeIcon } from "@/lib/ai";
 
 export default function EraShowcase() {
-    const themes = getAvailableThemes();
+    // const themes = getAvailableThemes();
     const [activeTheme, setActiveTheme] = useState(0);
     const [hoveredTheme, setHoveredTheme] = useState<number | null>(null);
 
@@ -44,55 +44,7 @@ export default function EraShowcase() {
                     </p>
                 </div>
 
-                {/* Features Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
-                    {themes.slice(0, 6).map((theme, index) => (
-                        <div
-                            key={theme}
-                            className={`group relative p-6 rounded-2xl border transition-all duration-500 cursor-pointer ${
-                                hoveredTheme === index 
-                                    ? 'border-purple-400 bg-white/5 shadow-2xl shadow-purple-500/20 scale-105' 
-                                    : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-xl backdrop-blur-sm'
-                            }`}
-                            onMouseEnter={() => setHoveredTheme(index)}
-                            onMouseLeave={() => setHoveredTheme(null)}
-                        >
-                            {/* Icon */}
-                            <div className={`text-3xl mb-4 transition-all duration-500 ${
-                                hoveredTheme === index ? 'scale-110' : ''
-                            }`}>
-                                {getThemeIcon(theme)}
-                            </div>
-
-                            {/* Content */}
-                            <h3 className="text-lg font-semibold text-white mb-2">
-                                {getThemeDisplayName(theme)}
-                            </h3>
-                            <p className="text-gray-400 text-sm leading-relaxed mb-4">
-                                Experience the {getThemeDisplayName(theme).toLowerCase()} aesthetic with AI transformation.
-                            </p>
-
-                            {/* CTA Button */}
-                            <div className="flex items-center justify-between">
-                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300">
-                                    AI Generated
-                                </span>
-                                <div className={`w-6 h-6 rounded-full bg-white/10 flex items-center justify-center transition-all duration-300 ${
-                                    hoveredTheme === index ? 'bg-purple-500/20 text-purple-300' : 'text-gray-400'
-                                }`}>
-                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </div>
-                            </div>
-
-                            {/* Hover Effect Overlay */}
-                            <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br from-purple-600/10 to-blue-600/10 opacity-0 transition-opacity duration-500 ${
-                                hoveredTheme === index ? 'opacity-100' : ''
-                            }`}></div>
-                        </div>
-                    ))}
-                </div>
+            
 
                 {/* Interactive Showcase */}
                 <div className="relative mb-20">
