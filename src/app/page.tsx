@@ -54,10 +54,10 @@ export default function HomePage() {
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl blur opacity-75 group-hover:opacity-100 transition-opacity"></div>
                 </Link>
                 <Link
-                  href="/gallery"
+                  href="/pricing"
                   className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white border-2 border-white/20 rounded-2xl hover:bg-white/10 hover:border-white/40 transition-all duration-300 backdrop-blur-sm"
                 >
-                  Explore Gallery
+                  View Pricing
                 </Link>
               </div>
 
